@@ -1,0 +1,15 @@
+services:
+  server:
+    image: "swiftlang/swift:nightly-focal"
+    volumes:
+      - /Users/elyon/Desktop/mock-weather-server:/code
+    environment:
+      - USER=Elyon
+    #command: bash -c "apt-get update && apt-get install nodejs && node /code/app.js"
+ 
+  client:
+    image: "library/rust:latest"
+    volumes:
+      - /Users/elyon/Desktop/mock-weather-server:/code
+    environment:
+      - USER=Elyon

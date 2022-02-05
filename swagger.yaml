@@ -1,0 +1,76 @@
+swagger: "2.0"
+info:
+  description: "Swagger Doc for three endpoints"
+  version: "1.0.0"
+  title: "Swagger Doc - Honghao Li"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "lihongh@oregonstate.edu"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:3000"
+basePath: "/v1"
+tags:
+- name: "user"
+  description: "Operations about user"
+schemes:
+- "http"
+paths:
+  /weather:
+    get:
+      tags:
+      - "user"
+      summary: "Obtains weather"
+      description: "Returns a hard-coded JSON of the weather of Corvallis"
+      operationId: "obtainWeather"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Successful operation"
+        "400":
+          description: "Invalid status value"
+  /hello:
+    get:
+      tags:
+      - "user"
+      summary: "Returns a greeting of my choice"
+      description: "Returns 'hello'"
+      operationId: "greetHello"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Successful operation"
+        "400":
+          description: "Invalid tag value"
+  /auth:
+    post:
+      tags:
+      - "user"
+      summary: "Accepts a username and password and returns a mock token"
+      description: ""
+      operationId: "authorizeUser"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Authorize user"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        default:
+          description: "Successful operation"
+definitions:
+  User:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+    xml:
+      name: "User"
