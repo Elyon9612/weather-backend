@@ -1,4 +1,4 @@
-swagger: "2.0"
+openapi: 3.0.1
 info:
   description: "Swagger Doc for three endpoints"
   version: "1.0.0"
@@ -9,68 +9,130 @@ info:
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "localhost:3000"
-basePath: "/v1"
+servers:
+- url: "http://localhost:3000/v1"
+
 tags:
-- name: "user"
-  description: "Operations about user"
-schemes:
-- "http"
+- name: "auth"
+  description: "Operations about authentication"
+- name: "weather"
+  description: "Operations about the weather"
+- name: "hello"
+  description: "Operations about greetings"
+
+
 paths:
-  /weather:
-    get:
-      tags:
-      - "user"
-      summary: "Obtains weather"
-      description: "Returns a hard-coded JSON of the weather of Corvallis"
-      operationId: "obtainWeather"
-      produces:
-      - "application/json"
-      responses:
-        "200":
-          description: "Successful operation"
-        "400":
-          description: "Invalid status value"
-  /hello:
-    get:
-      tags:
-      - "user"
-      summary: "Returns a greeting of my choice"
-      description: "Returns 'hello'"
-      operationId: "greetHello"
-      produces:
-      - "application/json"
-      responses:
-        "200":
-          description: "Successful operation"
-        "400":
-          description: "Invalid tag value"
   /auth:
     post:
       tags:
-      - "user"
+      - "auth"
       summary: "Accepts a username and password and returns a mock token"
-      description: ""
       operationId: "authorizeUser"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Authorize user"
+      requestBody:
+        description: "User credentials"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/auth"
         required: true
-        schema:
-          $ref: "#/definitions/User"
       responses:
-        default:
+        200:
           description: "Successful operation"
-definitions:
-  User:
-    type: "object"
-    properties:
-      username:
-        type: "string"
-      password:
-        type: "string"
-    xml:
-      name: "User"
+          content:
+            application/json:
+              example:
+                "accesstoken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkthcmwgQWRyaWFubyIsImlhdCI6MTUxNjIzOTAyMn0.STyNSCjMt9cKNL6YVfLRTBabPbzbW1FDRebDqTwC2-c"
+                "expires": "2022-02-11T23:59:59.999-08:00"
+        401:
+          description: "Invalid login"
+  /weather:
+    get:
+      tags:
+      - "weather"
+      summary: "Returns a hard-coded JSON of the weather of Corvallis"
+      operationId: "obtainWeather"
+      security: [
+        bearerAuth: []
+      ]
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            application/json:
+              example:
+                "coord": { 
+                  "lon": -123.262,
+                  "lat": 44.5646
+                }
+                "weather": {
+                  "id": 741,
+                  "main": "Fog",
+                  "description": "fog",
+                  "icon": "50n"
+                }
+                "base": "stations"
+                "main": {
+                  "temp": 276.57,
+                  "feels_like": 276.57,
+                  "temp_min": 274.72,
+                  "temp_max": 279.05,
+                  "pressure": 1024,
+                  "humidity": 79
+                }
+                "visibility": 805,
+                "wind": {
+                  "speed": 0,
+                  "deg": 0
+                }
+                "clouds": {
+                  "all": 100
+                }
+                "dt": 1642320503,
+                "sys": {
+                  "type": 2,
+                  "id": 2012991,
+                  "country": "US",
+                  "sunrise": 1642347934,
+                  "sunset": 1642381185
+                }
+                "timezone": -28800,
+                "id": 5720727,
+                "name": "Corvallis"
+                "cod": 200
+        "401":
+          description: "Access token is missing or invalid"
+  /hello:
+    get:
+      tags:
+      - "hello"
+      summary: "Returns a greeting of my choice"
+      operationId: "greetHello"
+      security: [
+        bearerAuth: []
+      ]
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            application/json:
+              example:
+                "greeting": "Karl says Hello" 
+        "400":
+          description: "Access token is missing or invalid"
+
+components:
+  schemas:
+    auth:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          format: "int64"
+        password:
+          type: "string"
+          format: "int64"
+  securitySchemes:
+    bearerAuth:
+      type: "http"
+      scheme: "bearer"
+      bearerFormat: "JWT"
