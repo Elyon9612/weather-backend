@@ -1,0 +1,105 @@
+openapi: 3.0.1
+info:
+  title: Honghao Assignment 5
+  description: "A swagger doc for three endpoints:\n`GET /v1/weather`\n`GET /data/2.5/weather`\n\
+    `GET /v1/hello` "
+  contact:
+    email: lihongh@oregonstate.edu
+  version: 1.0.0
+servers:
+- url: http://18.212.38.23/v1
+tags:
+- name: Honghao Li
+paths:
+  /weather:
+    get:
+      tags:
+      - user
+      summary: Current Temperature
+      description: Know temperature anywhere
+      operationId: getWeather
+      parameters:
+      - name: Name
+        in: query
+        description: City name
+        required: true
+        schema:
+          type: string
+      - name: API Key
+        in: query
+        description: API key
+        required: true
+        schema:
+          type: string
+      - name: token
+        in: query
+        description: Enter access token
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success....
+          content:
+            application/json:
+              schema:
+                type: string
+        400:
+          description: Invalid API Key
+          content: {}
+  /hello:
+    get:
+      tags:
+      - user
+      summary: return a greeting
+      operationId: get_hello
+      parameters:
+      - name: token
+        in: query
+        description: 'Enter Token:'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Have a nice day!
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+  /auth:
+    post:
+      tags:
+      - user
+      summary: Get token
+      operationId: userlogin
+      requestBody:
+        description: Enter username and password
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        200:
+          description: Token generated successfully.
+          content: {}
+        400:
+          description: Bad request
+          content: {}
+        401:
+          description: You're not authorized
+          content: {}
+      x-codegen-request-body-name: Details
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          description: Get Token
+      xml:
+        name: User

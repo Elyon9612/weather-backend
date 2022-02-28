@@ -1,138 +1,115 @@
-openapi: 3.0.1
+swagger: "2.0"
 info:
-  description: "Swagger Doc for three endpoints"
+  description: "A swagger doc for three endpoints:
+  
+`GET /v1/weather`
+`GET /data/2.5/weather` 
+`GET /v1/hello` "
+
   version: "1.0.0"
-  title: "Swagger Doc - Honghao Li"
-  termsOfService: "http://swagger.io/terms/"
+  title: "Honghao Assignment 5"
   contact:
     email: "lihongh@oregonstate.edu"
-  license:
-    name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-servers:
-- url: "http://localhost:3000/v1"
-
+  # license:
+  #   name: "license"
+  #   url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:3000"
+basePath: "/v1"
 tags:
-- name: "auth"
-  description: "Operations about authentication"
-- name: "weather"
-  description: "Operations about the weather"
-- name: "hello"
-  description: "Operations about greetings"
-
-
+- name: "Honghao"
+  # description: "about"
+  # externalDocs:
+  #   # description: "Find out more"
+  #   # url: "https://github.com/Elyon9612"
+schemes:
+- "http"
 paths:
-  /auth:
-    post:
-      tags:
-      - "auth"
-      summary: "Accepts a username and password and returns a mock token"
-      operationId: "authorizeUser"
-      requestBody:
-        description: "User credentials"
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/auth"
-        required: true
-      responses:
-        200:
-          description: "Successful operation"
-          content:
-            application/json:
-              example:
-                "accesstoken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkthcmwgQWRyaWFubyIsImlhdCI6MTUxNjIzOTAyMn0.STyNSCjMt9cKNL6YVfLRTBabPbzbW1FDRebDqTwC2-c"
-                "expires": "2022-02-11T23:59:59.999-08:00"
-        401:
-          description: "Invalid login"
-  /weather:
+  /weather:      
     get:
       tags:
-      - "weather"
-      summary: "Returns a hard-coded JSON of the weather of Corvallis"
-      operationId: "obtainWeather"
-      security: [
-        bearerAuth: []
-      ]
+      - "user"
+      summary: "Current Temperature"
+      description: "Know temperature anywhere"
+      operationId: "getWeather"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "Name"
+        in: "query" 
+        description: "City name"
+        required: true
+        type: "string"
+      - name: "API Key"  
+        in: "query"
+        description: "API key"
+        required: true
+        type: "string"
+      - name: "token"  
+        in: "query"
+        description: "Enter access token"
+        required: true
+        type: "string"
       responses:
         "200":
-          description: "Successful operation"
-          content:
-            application/json:
-              example:
-                "coord": { 
-                  "lon": -123.262,
-                  "lat": 44.5646
-                }
-                "weather": {
-                  "id": 741,
-                  "main": "Fog",
-                  "description": "fog",
-                  "icon": "50n"
-                }
-                "base": "stations"
-                "main": {
-                  "temp": 276.57,
-                  "feels_like": 276.57,
-                  "temp_min": 274.72,
-                  "temp_max": 279.05,
-                  "pressure": 1024,
-                  "humidity": 79
-                }
-                "visibility": 805,
-                "wind": {
-                  "speed": 0,
-                  "deg": 0
-                }
-                "clouds": {
-                  "all": 100
-                }
-                "dt": 1642320503,
-                "sys": {
-                  "type": 2,
-                  "id": 2012991,
-                  "country": "US",
-                  "sunrise": 1642347934,
-                  "sunset": 1642381185
-                }
-                "timezone": -28800,
-                "id": 5720727,
-                "name": "Corvallis"
-                "cod": 200
-        "401":
-          description: "Access token is missing or invalid"
+          description: "Success...."
+          schema:
+            type: "string"
+        "400":
+          description: "Invalid API Key"
   /hello:
     get:
       tags:
-      - "hello"
-      summary: "Returns a greeting of my choice"
-      operationId: "greetHello"
-      security: [
-        bearerAuth: []
-      ]
+      - "user"
+      summary: "return a greeting"
+      description: ""
+      operationId: "get_hello"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "token"
+        in: "query" 
+        description: "Enter Token:"
+        required: true
+        type: "string"
       responses:
-        "200":
-          description: "Successful operation"
-          content:
-            application/json:
-              example:
-                "greeting": "Karl says Hello" 
-        "400":
-          description: "Access token is missing or invalid"
-
-components:
-  schemas:
-    auth:
-      type: "object"
-      properties:
-        username:
-          type: "string"
-          format: "int64"
-        password:
-          type: "string"
-          format: "int64"
-  securitySchemes:
-    bearerAuth:
-      type: "http"
-      scheme: "bearer"
-      bearerFormat: "JWT"
+        200:
+          description: "Have a nice day!"
+        400:
+          description: "Bad request"
+  
+  /auth:
+    post:
+      tags:
+      - "user"
+      summary: "Get token"
+      description: ""
+      operationId: "userlogin"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "Details"
+        description: "Enter username and password"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        200:
+          description: "Token generated successfully."
+        400:
+          description: "Bad request"
+        401:
+          description: "You're not authorized"
+        
+          
+definitions:
+  User:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+        description: "Get Token"
+    xml:
+      name: "User"
